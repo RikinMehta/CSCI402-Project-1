@@ -126,9 +126,11 @@ void Lock::Acquire() {
 		}
 		
 		if(lockStatus == 0){										//If lock is FREE, let the thread Acquire it
+			printf("The lock is FREE. And you own it now\n");
 			lockStatus = 1;
 			lockOwnerThread = currentThread;
 		}else{														//If lock is BUSY, send thread to wait queue
+			printf("The lock is BUSY. You are inserted in the waiting queue.\n");
 			lockWaitQueue->Append((void*)currentThread);
 			currentThread->Sleep();
 		}
@@ -143,17 +145,19 @@ void Lock::Release() {
 		IntStatus oldLevel = interrupt->SetLevel(IntOff);			//Disable interrupts
 		if(lockOwnerThread != currentThread){						//If I'm not the lock owner print and return
 			currentThread->Print();
-			printf(" is not the owner thread for lock %s\n", getName());
+			printf("is not the owner thread for lock %s\n", getName());
 			(void) interrupt->SetLevel(oldLevel);						//Restore interrupts		
 			return;	
 		}
 		
 		if(!lockWaitQueue->IsEmpty()){								//If lock waiting queue is not empty, make another thread the lockOwner and put it in
 																	//Ready Queue
+			printf("Remove first thread from the wiating queue and make it the owner\n");														
 			Thread* poppedThread = (Thread*)lockWaitQueue->Remove();
 			lockOwnerThread = poppedThread;
 			scheduler->ReadyToRun(poppedThread);	
 		}else{														//If no waiting thread, make lock FREE and lock owner NULL
+			printf("There are no more threads wiating to acquire the lock.\n");
 			lockStatus = 0;
 			lockOwnerThread = NULL;	
 		}
@@ -180,24 +184,25 @@ void Condition::Wait(Lock* conditionLock) {
 		IntStatus oldLevel = interrupt->SetLevel(IntOff);			//disable Interrupts to make operation atomic
 		
 		if(conditionLock==NULL){									//Condition to check if the Lock passed is pointing to null
-			printf("There is no lock to wait on");					//Print error message
+			printf("There is no lock to wait on\n");					//Print error message
 			(void) interrupt->SetLevel(oldLevel);					//Restore Interrupts to previous state
 			return;
 		}
 		
 		if(waitingLock==NULL){										//Condition to check if this is the first lock on which condition-wait was called
+			printf("%s has now become a waiting lock\n",conditionLock->getName());
 			waitingLock=conditionLock;								//Make the condition Lock as the waiting Lock to enable sequencing	
 		}
 		
 		if(conditionLock!=waitingLock){								//Condition to check if the lock on which condition-lock is called is actually a waiting 
 																	//lock
-			printf("The Lock on which you are calling wait is the same as waiting Lock");//Print error message
+			printf("The Lock on which you are calling wait is the same as waiting Lock\n");//Print error message
 			(void) interrupt->SetLevel(oldLevel);					//Restore Interrupts to previous state
 			return;	
 		}
 		
 		//If condition lock passes all of the above tests, we can make the thread to wait
-		
+		printf("The condition Lock will now be released\n");
 		conditionLock->Release();									//Release the lock for the current Thread
 		conditionWaitQueue->Append((void *)currentThread);			//Insert the current Thread on condition wait Queue
 		currentThread->Sleep();										//Change the state of current Thread to sleep
@@ -226,9 +231,11 @@ void Condition::Signal(Lock* conditionLock) {
 		
 		//After certain condition checks WakeUp one thread from the Condition Wait Queue and bring it to Ready State
 		if(conditionWaitQueue->IsEmpty()){							//Condition to check if conditionwaitqueue is emtpy  
+			printf("Condition Wait Queue is empty. There is no one waiting to acquire this lock\n");
 			waitingLock=NULL;										//If so make waitingLock point to nothing
 		}
 		else{														//If condition wait queue is not empty
+			printf("A thread from the waiting queue is woken up\n");
 			Thread* poppedThread = (Thread*)conditionWaitQueue->Remove();//Wake up one thread from condition wait queue
 			scheduler->ReadyToRun(poppedThread);					//and change its state to ready
 		}
@@ -241,6 +248,7 @@ void Condition::Signal(Lock* conditionLock) {
 void Condition::Broadcast(Lock* conditionLock) { 
 	#ifdef CHANGED
 		//It is used to signal all threads in a condition wait Queue 
+		printf("Each thread in the condition wait queue is signaled \n");
 		while(!conditionWaitQueue->IsEmpty()){
 			Signal(conditionLock);
 		}

@@ -302,62 +302,62 @@ void TestSuite() {
 
     // Test 2
 
-    printf("Starting Test 2.  Note that it is an error if thread t2_t2\n");
-    printf("completes\n");
+    // printf("Starting Test 2.  Note that it is an error if thread t2_t2\n");
+    // printf("completes\n");
 
-    t = new Thread("t2_t1");
-    t->Fork((VoidFunctionPtr)t2_t1,0);
+    // t = new Thread("t2_t1");
+    // t->Fork((VoidFunctionPtr)t2_t1,0);
 
-    t = new Thread("t2_t2");
-    t->Fork((VoidFunctionPtr)t2_t2,0);
+    // t = new Thread("t2_t2");
+    // t->Fork((VoidFunctionPtr)t2_t2,0);
 
-    // Wait for Test 2 to complete
-    t2_done.P();
+    // // Wait for Test 2 to complete
+    // t2_done.P();
 
     // Test 3
 
-    // printf("Starting Test 3\n");
+    printf("Starting Test 3\n");
 
-    // for (  i = 0 ; i < 5 ; i++ ) {
-	// name = new char [20];
-	// sprintf(name,"t3_waiter%d",i);
-	// t = new Thread(name);
-	// t->Fork((VoidFunctionPtr)t3_waiter,0);
-    // }
-    // t = new Thread("t3_signaller");
-    // t->Fork((VoidFunctionPtr)t3_signaller,0);
+    for (  i = 0 ; i < 5 ; i++ ) {
+	name = new char [20];
+	sprintf(name,"t3_waiter%d",i);
+	t = new Thread(name);
+	t->Fork((VoidFunctionPtr)t3_waiter,0);
+    }
+    t = new Thread("t3_signaller");
+    t->Fork((VoidFunctionPtr)t3_signaller,0);
 
-    // // Wait for Test 3 to complete
-    // for (  i = 0; i < 2; i++ )
-	// t3_done.P();
+    // Wait for Test 3 to complete
+    for (  i = 0; i < 2; i++ )
+	t3_done.P();
 
     // // Test 4
 
-    // printf("Starting Test 4\n");
+    printf("Starting Test 4\n");
 
-    // for (  i = 0 ; i < 5 ; i++ ) {
-	// name = new char [20];
-	// sprintf(name,"t4_waiter%d",i);
-	// t = new Thread(name);
-	// t->Fork((VoidFunctionPtr)t4_waiter,0);
-    // }
-    // t = new Thread("t4_signaller");
-    // t->Fork((VoidFunctionPtr)t4_signaller,0);
+    for (  i = 0 ; i < 5 ; i++ ) {
+	name = new char [20];
+	sprintf(name,"t4_waiter%d",i);
+	t = new Thread(name);
+	t->Fork((VoidFunctionPtr)t4_waiter,0);
+    }
+    t = new Thread("t4_signaller");
+    t->Fork((VoidFunctionPtr)t4_signaller,0);
 
-    // // Wait for Test 4 to complete
-    // for (  i = 0; i < 6; i++ )
-	// t4_done.P();
+    // Wait for Test 4 to complete
+    for (  i = 0; i < 6; i++ )
+	t4_done.P();
 
     // // Test 5
 
-    // printf("Starting Test 5.  Note that it is an error if thread t5_t1\n");
-    // printf("completes\n");
+    printf("Starting Test 5.  Note that it is an error if thread t5_t1\n");
+    printf("completes\n");
 
-    // t = new Thread("t5_t1");
-    // t->Fork((VoidFunctionPtr)t5_t1,0);
+    t = new Thread("t5_t1");
+    t->Fork((VoidFunctionPtr)t5_t1,0);
 
-    // t = new Thread("t5_t2");
-    // t->Fork((VoidFunctionPtr)t5_t2,0);
+    t = new Thread("t5_t2");
+    t->Fork((VoidFunctionPtr)t5_t2,0);
 
 }
 #endif
